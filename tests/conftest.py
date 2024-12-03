@@ -215,6 +215,7 @@ async def manager_user(db_session: AsyncSession):
 @pytest.fixture
 def user_base_data():
     return {
+        "nickname" : "j_doe",
         "username": "john_doe_123",
         "email": "john.doe@example.com",
         "full_name": "John Doe",
@@ -225,9 +226,11 @@ def user_base_data():
 @pytest.fixture
 def user_base_data_invalid():
     return {
-        "username": "john_doe_123",
+        "nickname": "john_doe_123",
         "email": "john.doe.example.com",
         "full_name": "John Doe",
+        "first_name": "Doe",
+        "last_name": "John",
         "bio": "I am a software engineer with over 5 years of experience.",
         "profile_picture_url": "https://example.com/profile_pictures/john_doe.jpg"
     }
@@ -249,13 +252,13 @@ def user_update_data():
 @pytest.fixture
 def user_response_data():
     return {
-        "id": "unique-id-string",
         "username": "testuser",
         "email": "test@example.com",
         "last_login_at": datetime.now(),
         "created_at": datetime.now(),
         "updated_at": datetime.now(),
-        "links": []
+        "links": [],
+        "nickname": "testnickname"  # Add a valid nickname
     }
 
 @pytest.fixture
