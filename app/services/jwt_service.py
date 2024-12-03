@@ -18,5 +18,7 @@ def decode_token(token: str):
     try:
         decoded = jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
         return decoded
-    except jwt.PyJWTError:
+    except jwt.PyJWTError as e:
+        # Log the error or raise a custom exception for better error tracing
+        print(f"JWT Decode Error: {e}")
         return None

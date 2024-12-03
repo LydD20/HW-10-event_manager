@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     secret_key: str = Field(default="secret-key", description="Secret key for encryption")
     algorithm: str = Field(default="HS256", description="Algorithm used for encryption")
     access_token_expire_minutes: int = Field(default=30, description="Expiration time for access tokens in minutes")
+    admin_email: str = Field(default="admin@example.com", description="Default admin email")
     admin_user: str = Field(default='admin', description="Default admin username")
     admin_password: str = Field(default='secret', description="Default admin password")
     debug: bool = Field(default=False, description="Debug mode outputs errors and sqlalchemy queries")

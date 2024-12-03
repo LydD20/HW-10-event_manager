@@ -1,4 +1,4 @@
-from builtins import Exception, bool, classmethod, int, str
+from builtins import Exception, bool, classmethod, int, str, list
 from datetime import datetime, timezone
 import secrets
 from typing import Optional, Dict, List
@@ -18,6 +18,13 @@ import logging
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
+
+ADMIN = User(nickname=settings.admin_user,
+            email=settings.admin_email,
+            hashed_password=hash_password(settings.admin_password),
+            role=UserRole.ADMIN,
+            is_locked=False,
+            email_verified=True)
 
 class UserService:
     @classmethod
@@ -120,8 +127,6 @@ class UserService:
     async def login_user(cls, session: AsyncSession, email: str, password: str) -> Optional[User]:
         user = await cls.get_by_email(session, email)
         if user:
-            if user.email_verified is False:
-                return None
             if user.is_locked:
                 return None
             if verify_password(password, user.hashed_password):
@@ -142,7 +147,6 @@ class UserService:
     async def is_account_locked(cls, session: AsyncSession, email: str) -> bool:
         user = await cls.get_by_email(session, email)
         return user.is_locked if user else False
-
 
     @classmethod
     async def reset_password(cls, session: AsyncSession, user_id: UUID, new_password: str) -> bool:
@@ -192,3 +196,11 @@ class UserService:
             await session.commit()
             return True
         return False
+    
+    @classmethod
+    async def create_default_admin(cls, session: AsyncSession):
+        admin = await cls.get_by_email(session, ADMIN.email)
+        if not admin:
+            session.add(ADMIN)
+            await session.commit()
+            logger.info("Default admin created")
