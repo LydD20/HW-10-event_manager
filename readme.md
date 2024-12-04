@@ -5,19 +5,19 @@
 
 1. **Issue #1**: The first issue I found was with pytest errors, specifically found in the tests folder including test/test_schemas/test_user_schemas.py,  tests/test_email.py/test_send_markdown_email. I also found errors referencing “nickname”. To fix this issue, I had to add edit conftest and test_user_schemas to match inputs and also added the missing nickname field to test data and schemas. 
 
-### Issue 1 Link: 
+### Issue 1 Link: https://github.com/LydD20/HW-10-event_manager/commit/ba189b8614af12606a40037917289b51ec5de215
 
 2. **Issue #2**: The second issue I found was with UserResponse when running pytest. To fix this issue, I updated test_user_schemas to include the needed uuid field, which helped ensure compatibility with the expected schema.
 
-### Issue 2 Link: 
+### Issue 2 Link: https://github.com/LydD20/HW-10-event_manager/commit/0a5c378673d9fec0068bf372c060789af230b06f
 
 3. **Issue #3**: Another issue I found was in the functionality of the code. There was no default admin user so wanted to add admin credentials for testing with admin user as user in API. To fix this issue, a default admin user is automatically added to the postgres database with credentials defined in config.py. With the admin_email and admin_password found in config.py, we can authorize the current session in the fastAPI and perform all CRUD tests with ADMIN privileges.
 
-### Issue 3 Link:
+### Issue 3 Link: https://github.com/LydD20/HW-10-event_manager/commit/6d9ec43d2948f05ab8a2c6761d4971b494c90504
 
 4. **Issue #4**: The fourth issue I found was with a 401 error, which was raised if the email is not verified. I decided to add a warning of verification step to code. To fix this, a new warning was added so that if a user without email verification tries to login, the API returns a 400 code. This code is a BadRequest HTTP response code and states “Complete email verification to login." so users know to fill in email verification to login.
 
-### Issue 4 Link: 
+### Issue 4 Link: https://github.com/LydD20/HW-10-event_manager/commit/88f9bb428c9a7dd527d6d6880db5a057f0257670
 
 5. **Issue #5**: The main and most time-consuming issue I found was in tests/test_api. When I ran pytest, I got errors with the following:
 test_users_api.py::test_login_unverified_user - assert 401 == 400
@@ -37,7 +37,7 @@ Test_users_api.py::test_list_users_unauthorized
 
 To fix this issue, I had to create a login function in conftest, import decode_token, and edit the jwt service file. I also fixed the docker.compose file by getting rid of the version and creating a .env file with secret token and admin information.  
 
-### Issue #5 Link:
+### Issue #5 Link: https://github.com/LydD20/HW-10-event_manager/commit/1dccd1b520dfef483ba76275e9c45f94ab56d7fb
 
 ## Docker Image
 <img width="831" alt="Screenshot 2024-12-03 at 5 02 45 PM" src="https://github.com/user-attachments/assets/74eba59d-4a9e-4371-95cf-bb29fa681ce6">
