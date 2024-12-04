@@ -26,6 +26,7 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, scoped_session
 from faker import Faker
+from app.services.jwt_service import decode_token 
 
 # Application-specific imports
 from app.main import app
@@ -36,7 +37,7 @@ from app.utils.security import hash_password
 from app.utils.template_manager import TemplateManager
 from app.services.email_service import EmailService
 from app.services.jwt_service import create_access_token
-
+from datetime import timedelta
 fake = Faker()
 
 settings = get_settings()
@@ -45,6 +46,33 @@ engine = create_async_engine(TEST_DATABASE_URL, echo=settings.debug)
 AsyncTestingSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 AsyncSessionScoped = scoped_session(AsyncTestingSessionLocal)
 
+def login_request_data():
+    return {"Username": "john_doe_123", "password": "SecurePassword123!"}
+@pytest.fixture
+async def user_token(user):
+    # Create a user token with 'sub' as the user's email and 'role' as 'USER'
+    token = create_access_token(
+        data={
+            "sub": user.email,  
+            "role": "USER"      # Add the user's role to the token payload
+        },
+        expires_delta=timedelta(hours=1)  # Extend expiration for test reliability
+    )
+    # Debugging output to verify the token and its payload
+    print("Generated Token:", token)
+    print("Decoded Token:", decode_token(token))
+    return token
+
+
+@pytest.fixture
+async def admin_token(admin_user):
+    # Create an admin token with 'sub' as the admin's email and 'role' as admin
+    return create_access_token(data={"sub": admin_user.email, "role": "admin"})
+
+@pytest.fixture
+async def manager_token(manager_user):
+    # Create a manager token with 'sub' as the manager's email and 'role' as manager
+    return create_access_token(data={"sub": manager_user.email, "role": "manager"})
 
 @pytest.fixture
 def email_service():
@@ -216,7 +244,10 @@ async def manager_user(db_session: AsyncSession):
 def user_base_data():
     return {
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 5-test_api-errors-for-pytest
         "nickname" : "j_doe",
         "username": "john_doe_123",
 >>>>>>> 2-pydantic-user-response-error
@@ -233,12 +264,17 @@ def user_base_data():
 def user_base_data_invalid():
     return {
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         "nickname": "john_doe_123",
 >>>>>>> 2-pydantic-user-response-error
+=======
+        "nickname": "john_doe_123",
+>>>>>>> 5-test_api-errors-for-pytest
         "email": "john.doe.example.com",
         "nickname": "john_doe_123",
         "full_name": "John Doe",
+<<<<<<< HEAD
 <<<<<<< HEAD
         "first_name": "John",
         "last_name": "Doe",
@@ -246,6 +282,10 @@ def user_base_data_invalid():
         "first_name": "Doe",
         "last_name": "John",
 >>>>>>> 2-pydantic-user-response-error
+=======
+        "first_name": "Doe",
+        "last_name": "John",
+>>>>>>> 5-test_api-errors-for-pytest
         "bio": "I am a software engineer with over 5 years of experience.",
         "profile_picture_url": "https://example.com/profile_pictures/john_doe.jpg"
     }
@@ -271,9 +311,12 @@ def user_update_data():
 def user_response_data():
     return {
 <<<<<<< HEAD
+<<<<<<< HEAD
         "id": uuid4(),
         "nickname": "testuser",
 =======
+=======
+>>>>>>> 5-test_api-errors-for-pytest
         "username": "testuser",
         "email": "test@example.com",
 >>>>>>> 2-pydantic-user-response-error
@@ -281,7 +324,11 @@ def user_response_data():
         "created_at": datetime.now(),
         "updated_at": datetime.now(),
         "links": [],
+<<<<<<< HEAD
         "nickname": "testnickname"  # Add a valid nickname
+=======
+        "nickname": "j_doe"  # Add a valid nickname
+>>>>>>> 5-test_api-errors-for-pytest
     }
 
 @pytest.fixture
