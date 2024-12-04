@@ -3,33 +3,60 @@ import pytest
 from pydantic import ValidationError
 from datetime import datetime
 from app.schemas.user_schemas import UserBase, UserCreate, UserUpdate, UserResponse, UserListResponse, LoginRequest
+import uuid
 
 # Tests for UserBase
 def test_user_base_valid(user_base_data):
+    # Test if nickname provided
+    user_base_data['nickname'] = 'j_doe'
     user = UserBase(**user_base_data)
-    assert user.nickname == user_base_data["nickname"]
+    assert user.nickname == 'j_doe'
+
+    # Test if nickname not provided
+    user_base_data.pop('nickname', None)
+    user= UserBase(**user_base_data)
+    assert user.nickname is None
     assert user.email == user_base_data["email"]
 
 # Tests for UserCreate
 def test_user_create_valid(user_create_data):
+    # Test if nickname not provided 
+    user_create_data['nickname'] = 'j_doe'
     user = UserCreate(**user_create_data)
-    assert user.nickname == user_create_data["nickname"]
+    assert user.nickname == 'j_doe'
+    assert user.password == user_create_data["password"]
+
+    # Test if nickname not provided
+    user_create_data.pop('nickname', None)
+    user = UserCreate(**user_create_data)
+    assert user.nickname is None
     assert user.password == user_create_data["password"]
 
 # Tests for UserUpdate
 def test_user_update_valid(user_update_data):
+    # Test if first name provided
+    user_update_data['first_name'] = 'John'
     user_update = UserUpdate(**user_update_data)
     assert user_update.email == user_update_data["email"]
     assert user_update.first_name == user_update_data["first_name"]
 
+    # Test if first name not provided
+    user_update_data.pop('first_name', None)
+    user_update = UserUpdate(**user_update_data)
+    assert user_update.first_name is None
+
 # Tests for UserResponse
 def test_user_response_valid(user_response_data):
+    # Create a valid uuid for test
+    user_response_data['id'] = str(uuid.uuid4())
     user = UserResponse(**user_response_data)
-    assert user.id == user_response_data["id"]
-    # assert user.last_login_at == user_response_data["last_login_at"]
+    assert str(user.id) == user_response_data ["id"]
 
 # Tests for LoginRequest
 def test_login_request_valid(login_request_data):
+    # Checks that email is included in data
+    login_request_data ['email'] = 'john.doe@example.com'
+    
     login = LoginRequest(**login_request_data)
     assert login.email == login_request_data["email"]
     assert login.password == login_request_data["password"]
