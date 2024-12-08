@@ -7,14 +7,16 @@ import uuid
 
 # Tests for UserBase
 def test_user_base_valid(user_base_data):
-    # Test if nickname provided
-    user_base_data['nickname'] = 'j_doe'
+    # Test when nickname is provided
+    user_base_data['nickname'] = 'johnny_doe'
     user = UserBase(**user_base_data)
-    assert user.nickname == 'j_doe'
-<<<<<<< HEAD
-=======
+    assert user.nickname == 'johnny_doe'
+
+    # Test when nickname is not provided (should be None by default)
+    user_base_data.pop('nickname', None)
+    user = UserBase(**user_base_data)
+    assert user.nickname is None  # Default value should be None
     assert user.email == user_base_data["email"]
->>>>>>> 2-pydantic-user-response-error
 
     # Test if nickname not provided
     user_base_data.pop('nickname', None)
@@ -38,22 +40,16 @@ def test_user_create_valid(user_create_data):
 
 # Tests for UserUpdate
 def test_user_update_valid(user_update_data):
-    # Test if first name provided
-    user_update_data['first_name'] = 'John'
+    # Test when first_name is provided
+    user_update_data['first_name'] = 'John'  # Add first_name
     user_update = UserUpdate(**user_update_data)
     assert user_update.email == user_update_data["email"]
-    assert user_update.first_name == "John"
+    assert user_update.first_name == user_update_data["first_name"]
 
-    # Test if first name not provided
-    user_update_data.pop('first_name', None)
+    # Test when first_name is not provided (should be None by default)
+    user_update_data.pop('first_name', None)  # Remove first_name to test the default None value
     user_update = UserUpdate(**user_update_data)
-    assert user_update.first_name is None
-
-<<<<<<< HEAD
-    # Test if first name not provided
-    user_update_data.pop('first_name', None)
-    user_update = UserUpdate(**user_update_data)
-    assert user_update.first_name is None
+    assert user_update.first_name is None  # Should be None if not provided
 
 # Tests for UserResponse
 def test_user_response_valid(user_response_data):
@@ -61,34 +57,20 @@ def test_user_response_valid(user_response_data):
     user_response_data['id'] = str(uuid.uuid4())
     user = UserResponse(**user_response_data)
     assert str(user.id) == user_response_data ["id"]
-=======
+
+# Tests for UserResponse
 def test_user_response_valid(user_response_data):
-    # Create a fixed UUID for the test
-    fixed_uuid = uuid.uuid4()
-    user_response_data["id"] = fixed_uuid  # Assign the fixed UUID directly
-
-    # Create the UserResponse instance
+    # Generate a valid UUID for the test
+    user_response_data['id'] = str(uuid.uuid4())  # This will generate a valid UUID string
+    
     user = UserResponse(**user_response_data)
-
-    # Assertions
-    assert user.id == fixed_uuid  # Compare with the fixed UUID
-    assert user.email == user_response_data["email"]
-    assert user.nickname == user_response_data.get("nickname")
-
->>>>>>> 2-pydantic-user-response-error
+    assert str(user.id) == user_response_data["id"]  # Compare UUID as a string
 
 # Tests for LoginRequest
 def test_login_request_valid(login_request_data):
     # Checks that email is included in data
-<<<<<<< HEAD
     login_request_data ['email'] = 'john.doe@example.com'
     
-=======
-    login_request_data = {
-        "email": "john.doe@example.com",
-        "password": "Secure*1234"
-    }
->>>>>>> 2-pydantic-user-response-error
     login = LoginRequest(**login_request_data)
     assert login.email == login_request_data["email"]
     assert login.password == login_request_data["password"]
