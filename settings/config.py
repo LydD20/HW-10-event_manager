@@ -43,6 +43,9 @@ class Settings(BaseSettings):
     smtp_username: str = Field(default='your-mailtrap-username', description="Username for SMTP server")
     smtp_password: str = Field(default='your-mailtrap-password', description="Password for SMTP server")
 
+    # Email settings
+    smtp_host: str = Field(default='localhost', description="SMTP server host for sending emails")
+    smtp_port: int = Field(default=1025, description="SMTP server port for sending emails")
 
     class Config:
         # If your .env file is not in the root directory, adjust the path accordingly.
