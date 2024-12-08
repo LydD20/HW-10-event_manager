@@ -205,7 +205,6 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Async
     # Authenticate user
     user = await UserService.login_user(session, form_data.username, form_data.password)
     if user:
-<<<<<<< HEAD
          if not user.email_verified:
             raise HTTPException(status_code=400, detail="Complete email verification to login.")
          access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
