@@ -16,7 +16,7 @@ Fixtures:
 # Standard library imports
 from builtins import range
 from datetime import datetime
-from unittest.mock import patch
+from unittest.mock import patch, AsyncMock
 from uuid import uuid4
 
 # Third-party imports
@@ -45,6 +45,15 @@ TEST_DATABASE_URL = settings.database_url.replace("postgresql://", "postgresql+a
 engine = create_async_engine(TEST_DATABASE_URL, echo=settings.debug)
 AsyncTestingSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 AsyncSessionScoped = scoped_session(AsyncTestingSessionLocal)
+
+from unittest.mock import AsyncMock, patch
+
+@pytest.fixture
+def mock_smtp():
+    with patch("app.utils.smtp_connection.SMTPConnection") as MockSMTP:
+        mock_instance = MockSMTP.return_value
+        mock_instance.send_email = AsyncMock()
+        yield mock_instance
 
 def login_request_data():
     return {"Username": "john_doe_123", "password": "SecurePassword123!"}
