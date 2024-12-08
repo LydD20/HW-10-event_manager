@@ -89,7 +89,6 @@ async def test_login_user_not_found(async_client):
     assert "Incorrect email or password." in response.json().get("detail", "")
 
 @pytest.mark.asyncio
-<<<<<<< HEAD
 async def test_login_incorrect_password(async_client, verified_user):
     form_data = {
         "username": verified_user.email,
@@ -158,9 +157,9 @@ async def test_list_users_as_manager(async_client, manager_token):
     assert response.status_code == 200
 
 @pytest.mark.asyncio
-=======
->>>>>>> 5-test_api-errors-for-pytest
 async def test_list_users_unauthorized(async_client, user_token):
-    headers = {"Authorization": f"Bearer {user_token}"}
-    response = await async_client.get("/users/", headers=headers)
-    assert response.status_code == 403  # Unauthorized for regular users
+    response = await async_client.get(
+        "/users/",
+        headers={"Authorization": f"Bearer {user_token}"}
+    )
+    assert response.status_code == 403  # Forbidden, as expected for regular user
