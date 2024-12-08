@@ -216,29 +216,28 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Async
     raise HTTPException(status_code=401, detail="Incorrect email or password.")
 
 @router.post("/token", include_in_schema=False, response_model=TokenResponse)
-async def login_for_token(form_data: OAuth2PasswordRequestForm = Depends(), session: AsyncSession = Depends(get_db)):
-    await UserService.create_default_admin(session)
-=======
-        # Check if user email is verified
-        if not user.email_verified:
-            raise HTTPException(status_code=401, detail="User email is not verified.")
-
-        # Generate access token
-        access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
-        access_token = create_access_token(
-            data={"sub": user.email, "role": str(user.role.name)},
-            expires_delta=access_token_expires
-        )
-        return {"access_token": access_token, "token_type": "bearer"}
-
-    # Raise exception for incorrect email or password
-    raise HTTPException(status_code=401, detail="Incorrect email or password.")
-@router.post("/login/", include_in_schema=False, response_model=TokenResponse, tags=["Login and Registration"])
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: AsyncSession = Depends(get_db)):
     if await UserService.is_account_locked(session, form_data.username):
         raise HTTPException(status_code=400, detail="Account locked due to too many failed login attempts.")
 
->>>>>>> 5-test_api-errors-for-pytest
+    user = await UserService.login_user(session, form_data.username, form_data.password)
+    if user:
+        access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
+
+        access_token = create_access_token(
+            data={"sub": user.email, "role": str(user.role.name)},
+            expires_delta=access_token_expires
+        )
+
+        return {"access_token": access_token, "token_type": "bearer"}
+    raise HTTPException(status_code=401, detail="Incorrect email or password.")
+
+    # Raise exception for incorrect email or password
+    raise HTTPException(status_code=401, detail="Incorrect email or password.")
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: AsyncSession = Depends(get_db)):
+    if await UserService.is_account_locked(session, form_data.username):
+        raise HTTPException(status_code=400, detail="Account locked due to too many failed login attempts.")
+
     user = await UserService.login_user(session, form_data.username, form_data.password)
     if user:
         access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
