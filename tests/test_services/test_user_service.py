@@ -10,7 +10,7 @@ pytestmark = pytest.mark.asyncio
 
 # Skip SMTP-dependent tests in CI environments
 skip_in_ci = pytest.mark.skipif(
-    os.getenv("CI"), reason="Skipping SMTP-dependent tests in CI environment"
+    os.getenv("CI") is not None, reason="Skipping SMTP-dependent tests in CI environment"
 )
 
 # Test creating a user with valid data
