@@ -16,7 +16,7 @@ Fixtures:
 # Standard library imports
 from builtins import range
 from datetime import datetime
-from unittest.mock import patch, AsyncMock
+from unittest.mock import patch
 from uuid import uuid4
 
 # Third-party imports
@@ -26,7 +26,6 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, scoped_session
 from faker import Faker
-from app.services.jwt_service import decode_token 
 
 # Application-specific imports
 from app.main import app
@@ -37,7 +36,7 @@ from app.utils.security import hash_password
 from app.utils.template_manager import TemplateManager
 from app.services.email_service import EmailService
 from app.services.jwt_service import create_access_token
-from datetime import timedelta
+
 fake = Faker()
 
 settings = get_settings()
@@ -46,42 +45,6 @@ engine = create_async_engine(TEST_DATABASE_URL, echo=settings.debug)
 AsyncTestingSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 AsyncSessionScoped = scoped_session(AsyncTestingSessionLocal)
 
-from unittest.mock import AsyncMock, patch
-
-@pytest.fixture
-def mock_smtp():
-    with patch("app.utils.smtp_connection.SMTPConnection") as MockSMTP:
-        mock_instance = MockSMTP.return_value
-        mock_instance.send_email = AsyncMock()
-        yield mock_instance
-
-def login_request_data():
-    return {"Username": "john_doe_123", "password": "SecurePassword123!"}
-@pytest.fixture
-async def user_token(user):
-    # Create a user token with 'sub' as the user's email and 'role' as 'USER'
-    token = create_access_token(
-        data={
-            "sub": user.email,  
-            "role": "USER"      # Add the user's role to the token payload
-        },
-        expires_delta=timedelta(hours=1)  # Extend expiration for test reliability
-    )
-    # Debugging output to verify the token and its payload
-    print("Generated Token:", token)
-    print("Decoded Token:", decode_token(token))
-    return token
-
-
-@pytest.fixture
-async def admin_token(admin_user):
-    # Create an admin token with 'sub' as the admin's email and 'role' as admin
-    return create_access_token(data={"sub": admin_user.email, "role": "admin"})
-
-@pytest.fixture
-async def manager_token(manager_user):
-    # Create a manager token with 'sub' as the manager's email and 'role' as manager
-    return create_access_token(data={"sub": manager_user.email, "role": "manager"})
 
 @pytest.fixture
 def email_service():
@@ -252,9 +215,8 @@ async def manager_user(db_session: AsyncSession):
 @pytest.fixture
 def user_base_data():
     return {
-        "nickname" : "j_doe",
-        "username": "john_doe_123",
         "email": "john.doe@example.com",
+        "nickname": "john_doe_123",
         "full_name": "John Doe",
         "first_name": "John",
         "last_name": "Doe",
@@ -265,9 +227,8 @@ def user_base_data():
 @pytest.fixture
 def user_base_data_invalid():
     return {
-        "nickname": "john_doe_123",
-        "nickname": "john_doe_123",
         "email": "john.doe.example.com",
+        "nickname": "john_doe_123",
         "full_name": "John Doe",
         "first_name": "Doe",
         "last_name": "John",
@@ -297,13 +258,11 @@ def user_response_data():
     return {
         "id": uuid4(),
         "nickname": "testuser",
-        "username": "testuser",
         "email": "test@example.com",
         "last_login_at": datetime.now(),
         "created_at": datetime.now(),
         "updated_at": datetime.now(),
-        "links": [],
-        "nickname": "testnickname"  # Add a valid nickname
+        "links": []
     }
 
 @pytest.fixture
@@ -317,10 +276,10 @@ async def user_token(verified_user):
 
 @pytest.fixture
 async def admin_token(admin_user):
-    token_data = {"sub": str(admin_user.id), "role": "ADMIN" }
+    token_data = {"sub": str(admin_user.id), "role": "ADMIN"}
     return create_access_token(data=token_data)
 
 @pytest.fixture
 async def manager_token(manager_user):
-    token_data = {"sub": str(manager_user.id), "role": "MANAGER" }
+    token_data = {"sub": str(manager_user.id), "role": "MANAGER"}
     return create_access_token(data=token_data)
